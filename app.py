@@ -1,10 +1,10 @@
 # app.py
 import os
+import asyncio
 from pyrogram import Client, filters
 from flask import Flask
 from threading import Thread
 
-# Flask app - ضروري لـ gunicorn
 web_app = Flask(__name__)
 
 @web_app.route('/')
@@ -15,18 +15,29 @@ def home():
 def health():
     return "OK", 200
 
-# إعدادات البوت
-API_ID = int(os.environ.get("API_ID", 0))
-API_HASH = os.environ.get("API_HASH", "")
+# إعدادات البوت - استخدم BOT_TOKEN بدلاً من SESSION_STRING
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
+
+# إذا كان لديك SESSION_STRING موجودة فعلية
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
 # Pyrogram client
-telegram_app = Client(
-    "bot_session",
-    api_id=API_ID,
-    api_hash=API_HASH,
-    session_string=SESSION_STRING
-)
+if BOT_TOKEN:
+    # استخدام البوت العادي
+    telegram_app = Client(
+        "bot_session",
+        bot_token=BOT_TOKEN,
+        api_id=int(os.environ.get("API_ID", 0)),
+        api_hash=os.environ.get("API_HASH", "")
+    )
+else:
+    # استخدام سترينغ الجلسة
+    telegram_app = Client(
+        "bot_session",
+        api_id=int(os.environ.get("API_ID", 0)),
+        api_hash=os.environ.get("API_HASH", ""),
+        session_string=SESSION_STRING
+    )
 
 @telegram_app.on_message(filters.command("start"))
 async def start(client, message):
@@ -36,17 +47,23 @@ async def start(client, message):
 async def ping(client, message):
     await message.reply("🏓 Pong!")
 
-def run_flask():
-    """تشغيل Flask"""
-    port = int(os.environ.get("PORT", 8080))
-    web_app.run(host='0.0.0.0', port=port, debug=False)
+# متغير عام للتحكم
+bot_running = False
 
 def run_bot():
     """تشغيل البوت"""
-    telegram_app.run()
+    global bot_running
+    if not bot_running:
+        bot_running = True
+        telegram_app.run()
+
+# تشغيل البوت في الخلفية عند استيراد الوحدة
+if not os.environ.get("GUNICORN_RUNNING"):
+    # لمنع التشغيل المزدوج
+    os.environ["GUNICORN_RUNNING"] = "1"
+    thread = Thread(target=run_bot, daemon=True)
+    thread.start()
 
 if __name__ == "__main__":
-    # تشغيل Flask و Pyrogram معًا
-    flask_thread = Thread(target=run_flask, daemon=True)
-    flask_thread.start()
-    run_bot()
+    port = int(os.environ.get("PORT", 8080))
+    web_app.run(host='0.0.0.0', port=port, debug=False)
