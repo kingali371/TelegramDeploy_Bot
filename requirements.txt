@@ -1,6 +1,5 @@
 pyrogram==2.0.106
 tgcrypto==1.2.5
-aiohttp==3.9.5
 flask==2.3.0
 requests==2.31.0
 gunicorn==21.2.0
