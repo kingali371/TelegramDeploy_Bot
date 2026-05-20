@@ -1,22 +1,22 @@
-# ملفات الجلسة
+# ملفات حساسة
 *.session
 *.session-journal
+.env
+config.ini
+my_account.session
 
-# ملفات بايثون المؤقتة
+# بايثون
 __pycache__/
 *.py[cod]
-*.pyo
-
-# البيئة الافتراضية
-venv/
+*$py.class
+*.so
+.Python
 env/
-.env
-
-# ملفات حساسة
-*.ini
-*.json
-!Procfile
+venv/
+.venv
 
 # النظام
 .DS_Store
 Thumbs.db
+*.log
+/logs/*
