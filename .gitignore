@@ -1,0 +1,22 @@
+# ملفات الجلسة
+*.session
+*.session-journal
+
+# ملفات بايثون المؤقتة
+__pycache__/
+*.py[cod]
+*.pyo
+
+# البيئة الافتراضية
+venv/
+env/
+.env
+
+# ملفات حساسة
+*.ini
+*.json
+!Procfile
+
+# النظام
+.DS_Store
+Thumbs.db
