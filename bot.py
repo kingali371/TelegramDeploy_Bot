@@ -1,28 +1,25 @@
+from flask import Flask
+from threading import Thread
 import os
-from pyrogram import Client, filters
 
-# جلب المتغيرات من البيئة
-API_ID = int(os.environ.get("API_ID"))
-API_HASH = os.environ.get("API_HASH")
-SESSION_STRING = os.environ.get("SESSION_STRING")
+# خادم وهمي لمنع Render من إيقاف البوت
+web_app = Flask(__name__)
 
-# إنشاء العميل
-app = Client(
-    "my_bot",
-    api_id=API_ID,
-    api_hash=API_HASH,
-    session_string=SESSION_STRING
-)
+@web_app.route('/')
+def home():
+    return "البوت يعمل ✅"
 
-@app.on_message(filters.command("start"))
-async def start_command(client, message):
-    await message.reply("✅ البوت يعمل بنجاح على Render!")
+def run_flask():
+    port = int(os.environ.get("PORT", 8080))
+    web_app.run(host='0.0.0.0', port=port)
 
-@app.on_message(filters.text)
-async def echo(client, message):
-    await message.reply(f"قلت: {message.text}")
-
-# نقطة البداية
+# في بداية الملف
 if __name__ == "__main__":
+    # تشغيل Flask في Thread منفصل
+    flask_thread = Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+    
+    # تشغيل البوت
     print("🚀 جاري تشغيل البوت...")
     app.run()
