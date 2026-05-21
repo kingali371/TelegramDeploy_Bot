@@ -1,6 +1,4 @@
-pyrogram==2.0.106
-tgcrypto==1.2.5
-flask==2.3.0
-requests==2.31.0
+Flask==2.3.0
+Pyrogram==2.0.106
 gunicorn==21.2.0
 python-dotenv==1.0.0
