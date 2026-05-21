@@ -1,13 +1,13 @@
 services:
   - type: web
     name: telegram-bot
-    env: python
+    runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python bot.py
+    startCommand: python app.py
     envVars:
       - key: API_ID
         sync: false
       - key: API_HASH
         sync: false
-      - key: SESSION_STRING
+      - key: BOT_TOKEN
         sync: false
